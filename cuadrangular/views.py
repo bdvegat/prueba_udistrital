@@ -7,7 +7,7 @@ import json
 from django.http import JsonResponse
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return HttpResponse("Hello, world.")
 
 @csrf_exempt
 def create_team(request):
@@ -31,11 +31,14 @@ def register_result(request):
             team1_score = form_data['team1_score']
             team2_score = form_data['team2_score']
 
-            if Team.objects.find(team1) and Team.objects.find(team2):
-                team = Match.objects.create(team1=team1,team2 = team2, team1_score=team1_score, team2_score = team2_Score)
-                data = {'status':'registered'}
+            if len(Team.objects.filter(team_name = team1)) == 1:
+                if len(Team.objects.filter(team_name = team2)) == 1:
+                    team = Match.objects.create(team1=team1,team2 = team2, team1_score=team1_score, team2_score = team2_Score)
+                    data = {'status':'registered'}
+                else: data = {'error':'team2 not found'}
             else:
-                data = {'error':'empty required parameters'}
-        except:
-            data = {'error':'empty required parameters'}
+                data = {'error':'team1 not found'}
+        except ex:
+            print(ex)
+            data = {'error':'required parameters empty'}
         return JsonResponse(data, safe=False)
