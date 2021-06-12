@@ -25,20 +25,13 @@ def create_team(request):
 def register_result(request):
     if request.method == 'POST':
         form_data = json.loads(request.body.decode())
-        try:
-            team1 = form_data['team1']
-            team2 = form_data['team2']
-            team1_score = form_data['team1_score']
-            team2_score = form_data['team2_score']
-
-            if len(Team.objects.filter(team_name = team1)) == 1:
-                if len(Team.objects.filter(team_name = team2)) == 1:
-                    team = Match.objects.create(team1=team1,team2 = team2, team1_score=team1_score, team2_score = team2_Score)
-                    data = {'status':'registered'}
-                else: data = {'error':'team2 not found'}
-            else:
-                data = {'error':'team1 not found'}
-        except ex:
-            print(ex)
-            data = {'error':'required parameters empty'}
+        team1 = form_data['team1']
+        team1 = Team.objects.filter(team_name = team1)[0]
+        team2 = form_data['team2']
+        team2 = Team.objects.filter(team_name = team2)[0]
+        team1_score = form_data['team1_score']
+        team2_score = form_data['team2_score']
+        print(form_data)
+        team = Match.objects.create(team1=team1,team2 = team2, team1_score=team1_score, team2_score = team2_score)
+        data = {'status':'registered'}
         return JsonResponse(data, safe=False)
